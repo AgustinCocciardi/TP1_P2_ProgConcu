@@ -14,20 +14,23 @@
 #define RANGO_MAXIMO 20
 #define VALOR_ALEATORIO_MAXIMO 65
 #define VALOR_ALEATORIO_NEGATIVO 32
+#define EXITO 1
 
 void llenarMatricesAleatorio(int **matrizA, int **matrizB,int tamanioMatriz);
 void mostrarMatriz(int **matriz,int tamanioMatriz,const char* nombre);
 int** crearMatriz(int tamanioMatriz);
 void mostrarMatrices(int **matrizA, int **matrizB, int **matrizCS, int **matrizCH, int tamanioMatriz);
-int** multiplicarMatricesSecuencial(int **matrizA, int **matrizB, int tamanioMatriz);
+void multiplicarMatricesSecuencial(int **matrizA, int **matrizB, int **matrizCS ,int tamanioMatriz);
+bool cantidadCorrectaDeParametros(int parametrosRecibidos, int parametrosEsperados);
+bool rangoValidoN(int valor, int valorMinimo, int valorMaximo);
 
 int main(int argc, char* argv[]){
-    if(argc != PARAMETROS_CORRECTOS){
+    if(!cantidadCorrectaDeParametros(argc,PARAMETROS_CORRECTOS)){
         std::cout<<"No ingreso la cantidad correcta de parametros. Solo debe ingresar el valor de N"<<std::endl;
         return PARAMETROS_INCORRECTOS;
     }
     int tamanioMatrices = atoi(argv[1]);
-    if (tamanioMatrices < RANGO_MINIMO || tamanioMatrices > RANGO_MAXIMO)
+    if (!rangoValidoN(tamanioMatrices,RANGO_MINIMO,RANGO_MAXIMO))
     {
         std::cout<<"El rango de N debe estar entre 5 y 20"<<std::endl;
         return N_FUERA_DE_RANGO;
@@ -36,10 +39,12 @@ int main(int argc, char* argv[]){
     int **matrizA, **matrizB, **matrizCS, **matrizCH;
     matrizA = crearMatriz(tamanioMatrices);
     matrizB = crearMatriz(tamanioMatrices);
+    matrizCS = crearMatriz(tamanioMatrices);
     matrizCH = crearMatriz(tamanioMatrices);
     llenarMatricesAleatorio(matrizA,matrizB,tamanioMatrices);
-    matrizCS = multiplicarMatricesSecuencial(matrizA,matrizB,tamanioMatrices);
+    multiplicarMatricesSecuencial(matrizA,matrizB,matrizCS,tamanioMatrices);
     mostrarMatrices(matrizA,matrizB,matrizCS,matrizCH,tamanioMatrices);    
+    return EXITO;
 }
 
 void llenarMatricesAleatorio(int **matrizA, int **matrizB,int tamanioMatriz)
@@ -91,19 +96,27 @@ void mostrarMatrices(int **matrizA, int **matrizB, int **matrizCS, int **matrizC
     mostrarMatriz(matrizCH,tamanioMatriz,"Matriz CH");
 }
 
-int** multiplicarMatricesSecuencial(int **matrizA, int **matrizB, int tamanioMatriz)
+void multiplicarMatricesSecuencial(int **matrizA, int **matrizB, int **matrizCS ,int tamanioMatriz)
 {
-    int** matriz = crearMatriz(tamanioMatriz);
     for (int i = INICIO_ITERADOR; i < tamanioMatriz; i++)
     {
         for (int j = INICIO_ITERADOR; j < tamanioMatriz; j++)
         {
-            matriz[i][j] = 0;
+            matrizCS[i][j] = 0;
             for (int k = INICIO_ITERADOR; k < tamanioMatriz; k++)
             {
-                matriz[i][j] += matrizA[i][k] * matrizB[k][j];
+                matrizCS[i][j] += matrizA[i][k] * matrizB[k][j];
             }
         }
     }
-    return matriz;
+}
+
+bool cantidadCorrectaDeParametros(int parametrosRecibidos, int parametrosEsperados)
+{
+    return parametrosRecibidos == parametrosEsperados;
+}
+
+bool rangoValidoN(int valor, int valorMinimo, int valorMaximo)
+{
+    return valor >= valorMinimo && valor <= valorMaximo;
 }

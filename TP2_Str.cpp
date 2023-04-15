@@ -23,19 +23,21 @@ struct MatricesHilos
     int** matrizCS;
     int** matrizCH;
     int tamanioMatriz;
+    int cantidadHilos;
 };
 
-void mostrarMatriz(int **matriz,int tamanioMatriz,const char* nombre);
-int** crearMatriz(int tamanioMatriz);
 bool cantidadCorrectaDeParametros(int parametrosRecibidos, int parametrosEsperados);
 bool rangoValidoN(int valor, int valorMinimo, int valorMaximo);
+int** crearMatriz(int tamanioMatriz);
+void mostrarMatriz(int **matriz,int tamanioMatriz,const char* nombre);
 MatricesHilos llenarEstructura(int tamanio);
 void mostrarMatrices(MatricesHilos matrizHilos);
 void multiplicarMatricesSecuencial(MatricesHilos matrizHilos);
 void llenarMatricesAleatorio(MatricesHilos matrizHilos);
 
 int main(int argc, char* argv[]){
-    if(!cantidadCorrectaDeParametros(argc,PARAMETROS_CORRECTOS)){
+    if(!cantidadCorrectaDeParametros(argc,PARAMETROS_CORRECTOS))
+    {
         std::cout<<"No ingreso la cantidad correcta de parametros. Solo debe ingresar el valor de N"<<std::endl;
         return PARAMETROS_INCORRECTOS;
     }
@@ -45,7 +47,6 @@ int main(int argc, char* argv[]){
         std::cout<<"El rango de N debe estar entre 5 y 20"<<std::endl;
         return N_FUERA_DE_RANGO;
     }
-    int cantidadHilos = tamanioMatrices;
     MatricesHilos matrizHilos = llenarEstructura(tamanioMatrices);
     llenarMatricesAleatorio(matrizHilos);
     multiplicarMatricesSecuencial(matrizHilos);
@@ -53,31 +54,14 @@ int main(int argc, char* argv[]){
     return EXITO;
 }
 
-void llenarMatricesAleatorio(MatricesHilos matrizHilos)
+bool cantidadCorrectaDeParametros(int parametrosRecibidos, int parametrosEsperados)
 {
-    srand(time(NULL));
-    for (int i = INICIO_ITERADOR; i < matrizHilos.tamanioMatriz; i++)
-    {
-        for (int j = INICIO_ITERADOR; j < matrizHilos.tamanioMatriz; j++)
-        {
-            matrizHilos.matrizA[i][j] = rand() % VALOR_ALEATORIO_MAXIMO - VALOR_ALEATORIO_NEGATIVO;
-            matrizHilos.matrizB[i][j] = rand() % VALOR_ALEATORIO_MAXIMO - VALOR_ALEATORIO_NEGATIVO;
-        }
-    }    
+    return parametrosRecibidos == parametrosEsperados;
 }
 
-void mostrarMatriz(int **matriz,int tamanioMatriz,const char* nombre)
+bool rangoValidoN(int valor, int valorMinimo, int valorMaximo)
 {
-    std::cout<<nombre<<std::endl;
-    for (int i = INICIO_ITERADOR; i < tamanioMatriz; i++)
-    {
-        for (int j = INICIO_ITERADOR; j < tamanioMatriz; j++)
-        {
-            std::cout << std::setw(ESPACIO_CARACTERES) << matriz[i][j];
-        }
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
+    return valor >= valorMinimo && valor <= valorMaximo;
 }
 
 int** crearMatriz(int tamanioMatriz)
@@ -94,6 +78,44 @@ int** crearMatriz(int tamanioMatriz)
     return matriz;
 }
 
+void mostrarMatriz(int **matriz,int tamanioMatriz,const char* nombre)
+{
+    std::cout<<nombre<<std::endl;
+    for (int i = INICIO_ITERADOR; i < tamanioMatriz; i++)
+    {
+        for (int j = INICIO_ITERADOR; j < tamanioMatriz; j++)
+        {
+            std::cout << std::setw(ESPACIO_CARACTERES) << matriz[i][j];
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+MatricesHilos llenarEstructura(int tamanio)
+{
+    MatricesHilos matrizHilo;
+    matrizHilo.matrizA = crearMatriz(tamanio);
+    matrizHilo.matrizB = crearMatriz(tamanio);
+    matrizHilo.matrizCS = crearMatriz(tamanio);
+    matrizHilo.matrizCH = crearMatriz(tamanio);    
+    matrizHilo.tamanioMatriz = matrizHilo.cantidadHilos = tamanio;
+    return matrizHilo;
+}
+
+void llenarMatricesAleatorio(MatricesHilos matrizHilos)
+{
+    srand(time(NULL));
+    for (int i = INICIO_ITERADOR; i < matrizHilos.tamanioMatriz; i++)
+    {
+        for (int j = INICIO_ITERADOR; j < matrizHilos.tamanioMatriz; j++)
+        {
+            matrizHilos.matrizA[i][j] = rand() % VALOR_ALEATORIO_MAXIMO - VALOR_ALEATORIO_NEGATIVO;
+            matrizHilos.matrizB[i][j] = rand() % VALOR_ALEATORIO_MAXIMO - VALOR_ALEATORIO_NEGATIVO;
+        }
+    }    
+}
+
 void multiplicarMatricesSecuencial(MatricesHilos matrizHilos)
 {
     for (int i = INICIO_ITERADOR; i < matrizHilos.tamanioMatriz; i++)
@@ -107,27 +129,6 @@ void multiplicarMatricesSecuencial(MatricesHilos matrizHilos)
             }
         }
     }    
-}
-
-bool cantidadCorrectaDeParametros(int parametrosRecibidos, int parametrosEsperados)
-{
-    return parametrosRecibidos == parametrosEsperados;
-}
-
-bool rangoValidoN(int valor, int valorMinimo, int valorMaximo)
-{
-    return valor >= valorMinimo && valor <= valorMaximo;
-}
-
-MatricesHilos llenarEstructura(int tamanio)
-{
-    MatricesHilos matrizHilo;
-    matrizHilo.matrizA = crearMatriz(tamanio);
-    matrizHilo.matrizB = crearMatriz(tamanio);
-    matrizHilo.matrizCS = crearMatriz(tamanio);
-    matrizHilo.matrizCH = crearMatriz(tamanio);
-    matrizHilo.tamanioMatriz = tamanio;
-    return matrizHilo;
 }
 
 void mostrarMatrices(MatricesHilos matrizHilos)

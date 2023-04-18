@@ -1,131 +1,181 @@
 import java.util.Random;
 import java.util.ArrayList;
 
-public class Main{
+public class Main
+{
 
-    static class Matriz {
-        private int[][] matrizA;
-        private int[][] matrizB;
-        private int[][] matrizCS;
-        private int[][] matrizCH;
-        private int tamanioMatriz;
-        final int INICIO_ITERADOR = 0;
-    
-        public Matriz(int tamanio) {
-            this.tamanioMatriz = tamanio;
-            matrizA = new int[tamanio][tamanio];
-            matrizB = new int[tamanio][tamanio];
-            matrizCS = new int[tamanio][tamanio];
-            matrizCH = new int[tamanio][tamanio];
-        }
-    
-        // Método para mostrar las cuatro matrices
-        public void mostrarMatrices() {
-            System.out.println("Matriz A:");
-            mostrarMatriz(matrizA);
-            System.out.println("Matriz B:");
-            mostrarMatriz(matrizB);
-            System.out.println("Matriz CS:");
-            mostrarMatriz(matrizCS);
-            System.out.println("Matriz CH:");
-            mostrarMatriz(matrizCH);
-        }
+  final static int NUMERO_PARAMETROS = 1;
+  final static int RANGO_MINIMO = 5;
+  final static int RANGO_MAXIMO = 20;
+  final static int INICIALIZADOR = 0;
 
-        public void completarMatricesAleatorias() {
-            Random random = new Random();
-            for (int i = 0; i < tamanioMatriz; i++) {
-                for (int j = 0; j < tamanioMatriz; j++) {
-                    matrizA[i][j] = random.nextInt(65) - 32; // generamos un número entre -32 y 32
-                    matrizB[i][j] = random.nextInt(65) - 32; // generamos un número entre -32 y 32
-                }
-            }
-        }
-    
-        // Método para multiplicar las matrices A y B de forma secuencial
-        public void multiplicarMatricesSecuencial() {
-            for (int i = 0; i < tamanioMatriz; i++) {
-                for (int j = 0; j < tamanioMatriz; j++) {
-                    int suma = 0;
-                    for (int k = 0; k < tamanioMatriz; k++) {
-                        suma += matrizA[i][k] * matrizB[k][j];
-                    }
-                    matrizCS[i][j] = suma;
-                }
-            }
-        }
+  static class Matriz 
+  {
+    private int[][] matrizA;
+    private int[][] matrizB;
+    private int[][] matrizCS;
+    private int[][] matrizCH;
+    private int tamanioMatriz;
+    final int INICIO_ITERADOR = 0;
 
-        public void multiplicarMatricesConHilos(int cantidadHilos) {
-            ArrayList<Thread> hilos = new ArrayList<>();
-            for (int i = INICIO_ITERADOR; i < cantidadHilos; i++) {
-                final int x = i;
-                hilos.add(new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        funcionEjecutadaPorHilo(x);
-                    }
-                }));
-            }
-            for (Thread hilo : hilos) {
-                hilo.start();
-            }
-            for (Thread hilo : hilos) {
-                try {
-                    hilo.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        void funcionEjecutadaPorHilo(int numeroHilo) {
-            for (int j = INICIO_ITERADOR; j < this.tamanioMatriz; j++) {
-                for (int k = INICIO_ITERADOR; k < this.tamanioMatriz; k++) {
-                    this.matrizCH[numeroHilo][j] += this.matrizA[numeroHilo][k] * this.matrizB[k][j];
-                }
-            }
-        }
+    public Matriz(int tamanio) 
+    {
+      this.tamanioMatriz = tamanio;
+      this.matrizA = new int[tamanio][tamanio];
+      this.matrizB = new int[tamanio][tamanio];
+      this.matrizCS = new int[tamanio][tamanio];
+      this.matrizCH = new int[tamanio][tamanio];
+    }
     
-        // Método auxiliar para mostrar una matriz
-        private void mostrarMatriz(int[][] matriz) {
-            for (int i = 0; i < tamanioMatriz; i++) {
-                for (int j = 0; j < tamanioMatriz; j++) {
-                    //System.out.print(matriz[i][j] + " ");
-                    System.out.printf("%6d", matriz[i][j]);
-                }
-                System.out.println();
-            }
-            System.out.println();
-        }
+    public void mostrarMatrices() 
+    {
+      System.out.println("Matriz A:");
+      mostrarMatriz(matrizA);
+      System.out.println("Matriz B:");
+      mostrarMatriz(matrizB);
+      System.out.println("Matriz CS:");
+      mostrarMatriz(matrizCS);
+      System.out.println("Matriz CH:");
+      mostrarMatriz(matrizCH);
     }
 
-    public static Matriz matrices;
-
-    public static void main(String[] args) {
-        // Validar que se haya pasado un solo parámetro
-        if (args.length != 1) {
-            System.out.println("Error: se esperaba un parámetro entero entre 5 y 20");
-            return;
+    public void completarMatricesAleatorias() 
+    {
+      Random random = new Random();
+      for (int i = 0; i < tamanioMatriz; i++) 
+      {
+        for (int j = 0; j < tamanioMatriz; j++) 
+        {
+          matrizA[i][j] = random.nextInt(65) - 32; 
+          matrizB[i][j] = random.nextInt(65) - 32; 
         }
-        // Convertir el parámetro a un número entero
-        int tamanioMatrices = 0;
-        try {
-            tamanioMatrices = Integer.parseInt(args[0]);
-        } catch (NumberFormatException e) {
-            System.out.println("Error: el parámetro debe ser un número entero");
-            return;
-        }
-
-        // Validar que el número entero esté entre 5 y 20
-        if (tamanioMatrices < 5 || tamanioMatrices > 20) {
-            System.out.println("Error: el número debe estar entre 5 y 20");
-            return;
-        }
-
-        matrices = new Matriz(tamanioMatrices);
-        matrices.completarMatricesAleatorias();
-        matrices.multiplicarMatricesSecuencial();
-        matrices.multiplicarMatricesConHilos(tamanioMatrices);
-        matrices.mostrarMatrices();
-        return;
+      }
     }
+    
+    public void multiplicarMatricesSecuencial() 
+    {
+      for (int i = 0; i < tamanioMatriz; i++) 
+      {
+        for (int j = 0; j < tamanioMatriz; j++) 
+        {
+          int suma = 0;
+          for (int k = 0; k < tamanioMatriz; k++) 
+          {
+            suma += matrizA[i][k] * matrizB[k][j];
+          }
+          matrizCS[i][j] = suma;
+        }
+      }
+    }
+
+    public void multiplicarMatricesConHilos(int cantidadHilos) 
+    {
+      ArrayList<Thread> hilos = new ArrayList<>();
+      for (int i = INICIO_ITERADOR; i < cantidadHilos; i++) 
+      {
+        final int x = i;
+        hilos.add(new Thread(new Runnable() 
+        {
+          @Override
+          public void run() 
+          {
+            funcionEjecutadaPorHilo(x);
+          }
+        }));
+      }
+      for (Thread hilo : hilos) 
+      {
+        hilo.start();
+      }
+      for (Thread hilo : hilos) 
+      {
+        try 
+        {
+          hilo.join();
+        } 
+        catch (InterruptedException e) 
+        {
+          e.printStackTrace();
+        }
+      }
+    }
+
+    void funcionEjecutadaPorHilo(int numeroHilo) 
+    {
+      for (int j = INICIO_ITERADOR; j < this.tamanioMatriz; j++) 
+      {
+        for (int k = INICIO_ITERADOR; k < this.tamanioMatriz; k++) 
+        {
+          this.matrizCH[numeroHilo][j] += this.matrizA[numeroHilo][k] * this.matrizB[k][j];
+        }
+      }
+    }
+
+    private void mostrarMatriz(int[][] matriz) 
+    {
+      for (int i = INICIO_ITERADOR; i < tamanioMatriz; i++) 
+      {
+        for (int j = INICIO_ITERADOR; j < tamanioMatriz; j++) 
+        {
+          System.out.printf("%6d", matriz[i][j]);
+        }
+        System.out.println();
+      }
+      System.out.println();
+    }
+
+    void compararMatricesResultado()
+    {
+      boolean sonIguales = true;
+      for (int i = INICIALIZADOR; i < tamanioMatriz; i++) 
+      {
+        for (int j = 0; j < tamanioMatriz; j++) 
+        {
+          if (matrizCS[i][j] != matrizCH[i][j])
+          {
+            sonIguales = false;
+            break;
+          }
+        }
+      }
+      if (sonIguales) 
+        System.out.println("El producto matricial coincide");
+      else
+        System.out.println("El producto matricial no coincide");
+    }
+  }
+
+  public static Matriz matrices;
+  public static void main(String[] args) 
+  {
+    if (args.length != NUMERO_PARAMETROS) 
+    {
+      System.out.println("No ingreso la cantidad correcta de parametros. Solamente debe ingresar un entero positivo");
+      return;
+    }
+    int tamanioMatrices = INICIALIZADOR;
+    try 
+    {
+      tamanioMatrices = Integer.parseInt(args[0]);
+    } 
+    catch (NumberFormatException e) 
+    {
+      System.out.println("El parametro que usted ingreso no es un entero positivo");
+      return;
+    }
+
+    if (tamanioMatrices < RANGO_MINIMO || tamanioMatrices > RANGO_MAXIMO) 
+    {
+      System.out.println("El rango de N debe estar entre 5 y 20");
+      return;
+    }
+    int cantidadHilos = tamanioMatrices;
+    matrices = new Matriz(tamanioMatrices);
+    matrices.completarMatricesAleatorias();
+    matrices.multiplicarMatricesSecuencial();
+    matrices.multiplicarMatricesConHilos(cantidadHilos);
+    matrices.mostrarMatrices();
+    matrices.compararMatricesResultado();
+    return;
+  }
 }

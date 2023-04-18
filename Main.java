@@ -17,6 +17,8 @@ public class Main
     private int[][] matrizCH;
     private int tamanioMatriz;
     final int INICIO_ITERADOR = 0;
+    final int VALOR_ALEATORIO_MAXIMO = 65;
+    final int VALOR_ALEATORIO_NEGATIVO = 32;
 
     public Matriz(int tamanio) 
     {
@@ -42,24 +44,24 @@ public class Main
     public void completarMatricesAleatorias() 
     {
       Random random = new Random();
-      for (int i = 0; i < tamanioMatriz; i++) 
+      for (int i = INICIO_ITERADOR; i < tamanioMatriz; i++) 
       {
-        for (int j = 0; j < tamanioMatriz; j++) 
+        for (int j = INICIO_ITERADOR; j < tamanioMatriz; j++) 
         {
-          matrizA[i][j] = random.nextInt(65) - 32; 
-          matrizB[i][j] = random.nextInt(65) - 32; 
+          matrizA[i][j] = random.nextInt(VALOR_ALEATORIO_MAXIMO) - VALOR_ALEATORIO_NEGATIVO; 
+          matrizB[i][j] = random.nextInt(VALOR_ALEATORIO_MAXIMO) - VALOR_ALEATORIO_NEGATIVO; 
         }
       }
     }
     
     public void multiplicarMatricesSecuencial() 
     {
-      for (int i = 0; i < tamanioMatriz; i++) 
+      for (int i = INICIO_ITERADOR; i < tamanioMatriz; i++) 
       {
-        for (int j = 0; j < tamanioMatriz; j++) 
+        for (int j = INICIO_ITERADOR; j < tamanioMatriz; j++) 
         {
-          int suma = 0;
-          for (int k = 0; k < tamanioMatriz; k++) 
+          int suma = INICIALIZADOR;
+          for (int k = INICIO_ITERADOR; k < tamanioMatriz; k++) 
           {
             suma += matrizA[i][k] * matrizB[k][j];
           }
@@ -73,13 +75,13 @@ public class Main
       ArrayList<Thread> hilos = new ArrayList<>();
       for (int i = INICIO_ITERADOR; i < cantidadHilos; i++) 
       {
-        final int x = i;
+        final int hilo = i;
         hilos.add(new Thread(new Runnable() 
         {
           @Override
           public void run() 
           {
-            funcionEjecutadaPorHilo(x);
+            funcionEjecutadaPorHilo(hilo);
           }
         }));
       }
@@ -127,9 +129,9 @@ public class Main
     void compararMatricesResultado()
     {
       boolean sonIguales = true;
-      for (int i = INICIALIZADOR; i < tamanioMatriz; i++) 
+      for (int i = INICIO_ITERADOR; i < tamanioMatriz; i++) 
       {
-        for (int j = 0; j < tamanioMatriz; j++) 
+        for (int j = INICIO_ITERADOR; j < tamanioMatriz; j++) 
         {
           if (matrizCS[i][j] != matrizCH[i][j])
           {
@@ -150,7 +152,7 @@ public class Main
   {
     if (args.length != NUMERO_PARAMETROS) 
     {
-      System.out.println("No ingreso la cantidad correcta de parametros. Solamente debe ingresar un entero positivo");
+      System.out.println("No ingreso la cantidad correcta de parametros. Solamente debe ingresar un entero positivo entre 5 y 20");
       return;
     }
     int tamanioMatrices = INICIALIZADOR;
@@ -160,7 +162,7 @@ public class Main
     } 
     catch (NumberFormatException e) 
     {
-      System.out.println("El parametro que usted ingreso no es un entero positivo");
+      System.out.println("El parametro que usted ingreso no es un entero positivo entre 5 y 20");
       return;
     }
 
